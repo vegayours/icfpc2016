@@ -3,7 +3,7 @@
 import os
 from os import path
 from argparse import ArgumentParser
-import api
+import api, fmt, visual, logic
 import json
 
 def ensure_dir(d):
@@ -51,6 +51,17 @@ def push_solution(args):
     with open(path.join(solution_dir, 'checker.json'), 'w') as f:
         json.dump(resp, f)
 
+def show_problem(args):
+    problem = open(path.join(args.problem_dir, 'spec.txt')).read()
+    spec = fmt.parse_spec(problem)
+    print "Polygons:", len(spec['polygons'])
+    for point in spec['polygons'][0]:
+        print "{},{}".format(point[0], point[1])
+
+    shift = logic.detect_shift(spec['polygons'])
+    print 'Shift: ', shift
+    visual.show_skeleton(spec['edges'], shift)
+
 
 if __name__ == '__main__':
     parser = ArgumentParser()
@@ -60,11 +71,15 @@ if __name__ == '__main__':
     fetch.add_argument('workdir')
     fetch.set_defaults(func=fetch_problems)
 
-    solve = subparsers.add_parser('solve')
+    solve = subparsers.add_parser('solution')
     solve.add_argument('problem_dir')
     solve.add_argument('solution_file')
     solve.add_argument('--name', default='manual')
     solve.set_defaults(func=push_solution)
+
+    show = subparsers.add_parser('show')
+    show.add_argument('problem_dir')
+    show.set_defaults(func=show_problem)
 
     args = parser.parse_args()
     args.func(args)
