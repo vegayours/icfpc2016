@@ -54,12 +54,19 @@ def push_solution(args):
 def show_problem(args):
     problem = open(path.join(args.problem_dir, 'spec.txt')).read()
     spec = fmt.parse_spec(problem)
-    print "Polygons:", len(spec['polygons'])
-    for point in spec['polygons'][0]:
-        print "{},{}".format(point[0], point[1])
-
     shift = logic.detect_shift(spec['polygons'])
-    print 'Shift: ', shift
+    print 'Shift: {}, {}'.format(shift[0], shift[1])
+    for i, p in enumerate(spec['polygons']):
+        print 'Poligon: {}'.format(i)
+        for point in p:
+            print "{},{}".format(point[0], point[1])
+        print 'Shifted : {}'.format(i)
+        for point in p:
+            print "{},{}".format(point[0] - shift[0], point[1] - shift[1])
+        print 'All result points: '
+        for i, j in spec['edges']:
+            print "{},{} -> {},{}".format(i[0], i[1], j[0], j[1])
+
     visual.show_skeleton(spec['edges'], shift)
 
 
